@@ -32,10 +32,10 @@ target_link_libraries(mypybindtests PRIVATE Catch2::Catch2WithMain MYLIB::MYLIB)
 add_executable(mypybindtestswithPY pylibtest.cpp)
 target_link_libraries(mypybindtestswithPY PRIVATE Catch2::Catch2WithMain MYLIB::MYLIB pybind11::embed)
 
-add_executable(t t.cxx)
-target_link_libraries(t PRIVATE Catch2::Catch2WithMain MYLIB::MYLIB pybind11::embed)
-
 catch_discover_tests(mypybindtests)
+catch_discover_tests(mypybindtestswithPY
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+    )
 
 # function(print_target_property target_name property)
     # get_target_property(tempvar ${target_name} ${property})
