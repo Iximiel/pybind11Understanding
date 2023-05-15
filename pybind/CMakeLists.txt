@@ -19,7 +19,6 @@ if(NOT TARGET MYLIB::MYLIB)
     find_package(MYLIB REQUIRED)
 endif()
 
-
 add_library(mypylib MODULE mypylib.cpp)
 
 target_link_libraries(mypylib PUBLIC pybind11::module)
@@ -38,6 +37,7 @@ if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
     pybind11_strip(mypylib)
 endif()
 
+install(TARGETS mypylib LIBRARY DESTINATION mylib)
 
 set_target_properties(mypylib PROPERTIES
                     INTERPROCEDURAL_OPTIMIZATION ON
