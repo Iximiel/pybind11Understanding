@@ -7,6 +7,9 @@
 #include <catch2/generators/catch_generators_adapters.hpp>
 #include <catch2/generators/catch_generators_random.hpp>
 
+#include <iostream>
+#define CC std::cout << __LINE__ << "\n";
+
 #include "mylib.hpp"
 
 namespace py = pybind11;
@@ -31,25 +34,46 @@ PYBIND11_EMBEDDED_MODULE(embeddedMylib, m) {
   m.doc() = "mylib"; // optional module docstring
 
   pybind11::class_<mylib::SimpleIO>(m, "SimpleIO")
+      .def(py::init<>())
       .def("getI", &mylib::SimpleIO::getI)
-      .def("setI", &mylib::SimpleIO::setI);
+      .def("setI", &mylib::SimpleIO::setI)
+      .def_property("I", &mylib::SimpleIO::getI, &mylib::SimpleIO::setI,
+                    py::return_value_policy::copy);
 }
 
-TEST_CASE("Playing with embedded my lib", "[py]") {
-  py::scoped_interpreter guard{};
-  auto embeddedMylib = py::module_::import("embeddedMylib");
-  auto py_module = py::module::import("pylibtest");
-  auto py_fcn = py_module.attr("setter");
-
-  SECTION("Creating and passing a SimpleIObject") {
-    mylib::SimpleIO mytest;
-    // auto mytest = embeddedMylib.attr("SimpleIO");
-    // the name of the variables help reading the tests errors
-    mytest.setI(42);
-    int prevInCpp = mytest.getI();
-    auto setValue = GENERATE(take(100, random(-100, 100)));
-    auto prevInPy = py_fcn(mytest, setValue);
-    REQUIRE(prevInPy.cast<int>() == prevInCpp);
-    REQUIRE(mytest.getI() == setValue);
+SCENARIO("Playing with embeddedMylib", "[py]") {
+  GIVEN("The python interpreter with the \"embeddedMylib\" loaded") {
+    py::scoped_interpreter guard{};
+    auto embeddedMylib = py::module_::import("embeddedMylib");
+    AND_GIVEN("The pylibtest test module as an external .py file") {
+      auto py_module = py::module::import("pylibtest");
+      auto funcName = GENERATE("parameter", "getterSetter");
+      THEN("The pylibtest has the attribute\"" << funcName << "\"") {
+        REQUIRE(py::hasattr(py_module, funcName));
+      }
+      WHEN("We load a function that calls " << funcName) {
+        auto useParameter = [fn = py_module.attr(funcName)](
+                                mylib::SimpleIO &simpleIO, int y) -> py::tuple {
+          return fn(simpleIO, y).cast<py::tuple>();
+        };
+        constexpr int exampleValue = 42;
+        auto setValue =
+            GENERATE(take(100, filter([](int i) { return i != exampleValue; },
+                                      random(-100, 100))));
+        mylib::SimpleIO mytest;
+        mytest.setI(exampleValue);
+        THEN("Setting and getting the values in python should work") {
+          // the name of the variables help reading the tests errors
+          int prevInCpp = mytest.getI();
+          auto retInPy = useParameter(mytest, setValue);
+          int prevInPy = retInPy[0].cast<int>();
+          int setInPy = retInPy[1].cast<int>();
+          REQUIRE(prevInPy == prevInCpp);
+          REQUIRE(setInPy == setValue);
+          // this will always fail
+          CHECK(mytest.getI() == setValue);
+        }
+      }
+    }
   }
 }
