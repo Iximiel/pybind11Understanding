@@ -12,5 +12,9 @@ def getterSetter(objectToSet:embeddedMylib.SimpleIO, value:int):
     toret2 = objectToSet.getI()
     return toret, toret2
 
-def setterdict(dictToset:dict,name, value:int):
+def setterdict(dictToset:dict, name:str, value:int):
     dictToset[name]=value
+
+def setterTupleLike(thingToset:"list or tuple", value0:int, value1:int):
+    thingToset[0]=value0
+    thingToset[1]=value1
