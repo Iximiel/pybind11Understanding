@@ -32,9 +32,6 @@ target_link_libraries(mypybindtests PRIVATE Catch2::Catch2WithMain MYLIB::MYLIB)
 add_executable(mypybindtestswithPY pylibtest.cpp)
 target_link_libraries(mypybindtestswithPY PRIVATE Catch2::Catch2WithMain MYLIB::MYLIB pybind11::embed)
 
-add_executable(embeddedExe embedded.cxx)
-target_link_libraries(embeddedExe PRIVATE MYLIB::MYLIB pybind11::embed)
-
 catch_discover_tests(mypybindtests)
 catch_discover_tests(mypybindtestswithPY
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
