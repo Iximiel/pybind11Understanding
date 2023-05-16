@@ -78,8 +78,9 @@ SCENARIO("Playing with embeddedMylib", "[py]") {
         REQUIRE(py::hasattr(py_module, funcName));
       }
       WHEN("We load a function that calls " << funcName) {
-        auto useParameter = [fn = py_module.attr(funcName)](
-                                mylib::SimpleIO &simpleIO, int y) -> py::tuple {
+        auto useParameterDirect =
+            [fn = py_module.attr(funcName)](mylib::SimpleIO &simpleIO,
+                                            int y) -> py::tuple {
           return fn(simpleIO, y).cast<py::tuple>();
         };
         constexpr int exampleValue = 42;
@@ -88,11 +89,12 @@ SCENARIO("Playing with embeddedMylib", "[py]") {
                                       random(-100, 100))));
         mylib::SimpleIO mytest;
         mytest.setI(exampleValue);
+        // py::object obj = py::cast(&mytest);
         THEN("Setting and getting the values in python should not affect the "
              "C++ object") {
           // the name of the variables help reading the tests errors
           int prevInCpp = mytest.getI();
-          auto retInPy = useParameter(mytest, setValue);
+          auto retInPy = useParameterDirect(mytest, setValue);
           int prevInPy = retInPy[0].cast<int>();
           int setInPy = retInPy[1].cast<int>();
           REQUIRE(prevInPy == prevInCpp);
@@ -119,11 +121,15 @@ SCENARIO("checking parameters multiple times", "[py]") {
           REQUIRE(py::hasattr(py_module, funcName));
         }
         WHEN("We load a function that calls " << funcName) {
-          auto useParameter = [fn = py_module.attr(funcName)](
-                                  py::object &simpleIO, int y) -> py::tuple {
+          auto useParameterObj = [fn = py_module.attr(funcName)](
+                                     py::object &simpleIO, int y) -> py::tuple {
             return fn(simpleIO, y).cast<py::tuple>();
           };
-
+          auto useParameterDirect =
+              [fn = py_module.attr(funcName)](mylib::SimpleIO &simpleIO,
+                                              int y) -> py::tuple {
+            return fn(simpleIO, y).cast<py::tuple>();
+          };
           auto setValue =
               GENERATE(take(100, filter([](int i) { return i != exampleValue; },
                                         random(-100, 100))));
@@ -137,19 +143,39 @@ SCENARIO("checking parameters multiple times", "[py]") {
               // the name of the variables help reading the tests errors
               int prevInCpp = mytest.getI();
               // auto retInPy = useParameter(mytest, setValue);
-              auto retInPy =
-                  py_module.attr(funcName)(obj, setValue).cast<py::tuple>();
+              auto retInPy = useParameterObj(obj, setValue);
+
               int prevInPy = retInPy[0].cast<int>();
               int setInPy = retInPy[1].cast<int>();
               REQUIRE(prevInPy == prevInCpp);
               REQUIRE(setInPy == setValue);
               REQUIRE(mytest.getI() == setValue);
             }
+
+            AND_WHEN("We use the object direclty") {
+              mylib::SimpleIO myOthertest;
+              myOthertest.setI(exampleValue);
+              THEN("Setting and getting the values in python should not affect "
+                   "the "
+                   "C++ object") {
+                // the name of the variables help reading the tests errors
+                int prevInCpp = myOthertest.getI();
+                auto retInPy = useParameterDirect(myOthertest, setValue);
+                int prevInPy = retInPy[0].cast<int>();
+                int setInPy = retInPy[1].cast<int>();
+                REQUIRE(prevInPy == prevInCpp);
+                REQUIRE(setInPy == setValue);
+                // this will always fail
+                // CHECK_FALSE(myOthertest.getI() == setValue);
+                CHECK(myOthertest.getI() == prevInCpp);
+              }
+            }
           }
         }
       }
     }
-    THEN("Even if the interpreter is out of, scope the variable should still "
+    THEN("Even if the interpreter is out of, scope the variable mytest should "
+         "still "
          "exist") {
       REQUIRE(mytest.getI() != exampleValue);
     }
