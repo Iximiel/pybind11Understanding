@@ -3,3 +3,7 @@ env/
 _skbuild/
 *.egg-info
 *.pyc
+#tests things
+LastTest.log
+CTestCostData.txt
+checktest/

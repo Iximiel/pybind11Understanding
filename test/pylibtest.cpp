@@ -165,7 +165,7 @@ SCENARIO("checking parameters multiple times", "[py]") {
                 int setInPy = retInPy[1].cast<int>();
                 REQUIRE(prevInPy == prevInCpp);
                 REQUIRE(setInPy == setValue);
-                // this will always fail
+                // It is better to check a single value:
                 // CHECK_FALSE(myOthertest.getI() == setValue);
                 CHECK(myOthertest.getI() == prevInCpp);
               }

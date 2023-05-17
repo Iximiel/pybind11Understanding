@@ -27,15 +27,27 @@ if(NOT TARGET MYLIB::MYLIB)
 endif()
 
 add_executable(mypybindtests baselibtest.cpp)
-target_link_libraries(mypybindtests PRIVATE Catch2::Catch2WithMain MYLIB::MYLIB)
+target_link_libraries(mypybindtests PRIVATE
+    Catch2::Catch2WithMain MYLIB::MYLIB)
 
 add_executable(mypybindtestswithPY pylibtest.cpp)
-target_link_libraries(mypybindtestswithPY PRIVATE Catch2::Catch2WithMain MYLIB::MYLIB pybind11::embed)
+target_link_libraries(mypybindtestswithPY PRIVATE
+    Catch2::Catch2WithMain MYLIB::MYLIB pybind11::embed)
+
+add_executable(passByReferenceTest passByReference.cpp)
+target_link_libraries(passByReferenceTest PRIVATE
+    Catch2::Catch2WithMain
+    #pybind11::embed
+    #MYLIB::MYLIB
+    #this tests that the embedded module can be distribuited externally!!!!
+    MYLIB::PYEMBEDDEDMYLIB)
 
 catch_discover_tests(mypybindtests)
 catch_discover_tests(mypybindtestswithPY
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     )
+
+catch_discover_tests(passByReferenceTest)
 
 # function(print_target_property target_name property)
     # get_target_property(tempvar ${target_name} ${property})

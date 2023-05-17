@@ -19,6 +19,15 @@ if(NOT TARGET MYLIB::MYLIB)
     find_package(MYLIB REQUIRED)
 endif()
 
+add_library(mypylibEmbedded OBJECT mypylibEmbedded.cpp)
+
+
+target_link_libraries(mypylibEmbedded
+    PUBLIC 
+        pybind11::embed
+        MYLIB::MYLIB)
+add_library(MYLIB::PYEMBEDDEDMYLIB ALIAS mypylibEmbedded)
+
 add_library(mypylib MODULE mypylib.cpp)
 
 target_link_libraries(mypylib PUBLIC pybind11::module)
