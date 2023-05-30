@@ -53,3 +53,18 @@ set_target_properties(mypylib PROPERTIES
                     CXX_VISIBILITY_PRESET "default"
                     VISIBLITY_INLINES_HIDDEN ON)
          
+
+add_executable(doublePY doubleEmbed.cxx)
+target_link_libraries(doublePY pybind11::embed)
+
+
+
+find_package(OpenMP)
+add_executable(doubleEmbedOMP doubleEmbedOMP.cxx)
+target_link_libraries(doubleEmbedOMP pybind11::embed OpenMP::OpenMP_CXX)
+
+find_package(MPI)
+if (MPI_FOUND)
+    add_executable(doubleEmbedMPI doubleEmbedMPI.cxx)
+    target_link_libraries(doubleEmbedMPI pybind11::embed MPI::MPI_CXX)
+endif (MPI_FOUND)
