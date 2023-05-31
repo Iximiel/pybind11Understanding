@@ -54,3 +54,9 @@ catch_discover_tests(passByReferenceTest)
     # message("${target_name} <${property}>: ${tempvar}")
     # unset(tempvar)    
 # endfunction(print_target_property)
+
+find_package(Python COMPONENTS Interpreter REQUIRED)
+add_test(NAME foolishADD
+    COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_foolish.py
+)
+set_property(TEST foolishADD PROPERTY ENVIRONMENT "PYTHONPATH=${CMAKE_CURRENT_BIN_DIR}../pybindmodule")

@@ -38,18 +38,20 @@ std::unique_ptr<py::scoped_interpreter> myScopedInterpreter::interpreter =
     nullptr;
 std::mutex myScopedInterpreter::interpreterMutex;
 
-void foolishCall(int i, int j) {
+int foolishCallADD(int i, int j) {
   myScopedInterpreter t{};
-  auto locals = py::dict("j"_a = j, "i"_a = i);
+  auto locals = py::dict("i"_a = i, "j"_a = j);
   py::exec(R"(
-        print(i+j)
+        t=i+j;
     )",
            py::globals(), locals);
+  return py::cast<int>(locals["t"]);
 }
 
 PYBIND11_MODULE(callEmbed, m) {
   m.doc() = "contains the mylib modules: SimpleIO"; // optional module docstring
 
-  m.def("foolishCall", &foolishCall, "A function which calls print in python",
+  m.def("foolishCallADD", &foolishCallADD,
+        "A function which calculates a sum in python, passing by C++",
         py::arg("i"), py::arg("j"));
 }
