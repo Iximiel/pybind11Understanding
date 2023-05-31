@@ -1,7 +1,6 @@
 
 add_library(mylib mylib.cpp)
 
-
 set_target_properties(mylib PROPERTIES 
     PUBLIC_HEADER mylib.hpp)
 

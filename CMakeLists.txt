@@ -6,7 +6,7 @@ set(VERSION_MINOR 0)
 set(VERSION_PATCH 1)
 
 # Compiler settings
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(warnings "-Wall -Wextra -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${warnings}")
 

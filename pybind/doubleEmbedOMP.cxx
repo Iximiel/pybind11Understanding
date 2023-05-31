@@ -18,12 +18,14 @@ void func(int j) {
 
 int main(int, char **) {
   try {
+    cout << Py_IsInitialized() << "\n";
     py::scoped_interpreter t{};
+    cout << Py_IsInitialized() << "\n";
     omp_set_num_threads(2);
 #pragma omp parallel
     {
       int j = omp_get_thread_num();
-      std::cout << "c++proc" << j << "\n";
+      std::cout << "c++proc" << j << std::endl;
       func(j);
       CC;
     }
