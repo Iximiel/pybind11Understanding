@@ -28,9 +28,13 @@ target_link_libraries(mypylibEmbedded
         MYLIB::MYLIB)
 add_library(MYLIB::PYEMBEDDEDMYLIB ALIAS mypylibEmbedded)
 
-add_library(mypylib MODULE mypylib.cpp)
+pybind11_add_module(mypylib mypylib.cpp)
+pybind11_add_module(callEmbed callEmbed.cpp)
+
+#add_library(mypylib MODULE mypylib.cpp)
 
 target_link_libraries(mypylib PUBLIC pybind11::module)
+target_link_libraries(callEmbed PUBLIC pybind11::module pybind11::embed)
 target_link_libraries(mypylib PUBLIC MYLIB::MYLIB)
 
 function(print_target_property target_name property)
@@ -46,9 +50,9 @@ if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
     pybind11_strip(mypylib)
 endif()
 
-install(TARGETS mypylib LIBRARY DESTINATION mylib)
+#install(TARGETS mypylib LIBRARY DESTINATION mylib)
 
-set_target_properties(mypylib PROPERTIES
-                    INTERPROCEDURAL_OPTIMIZATION ON
-                    CXX_VISIBILITY_PRESET "default"
-                    VISIBLITY_INLINES_HIDDEN ON)
+#set_target_properties(mypylib PROPERTIES
+#                    INTERPROCEDURAL_OPTIMIZATION ON
+#                    CXX_VISIBILITY_PRESET "default"
+#                    VISIBLITY_INLINES_HIDDEN ON)
