@@ -15,8 +15,8 @@ endif(NOT pybind11_FOUND)
 
 #include(pybind11)
 #this should make the tests standalone
-if(NOT TARGET MYLIB::MYLIB)
-    find_package(MYLIB REQUIRED)
+if(NOT TARGET MYLIB::mylib)
+    find_package(mylib REQUIRED)
 endif()
 
 add_library(mypylibEmbedded OBJECT mypylibEmbedded.cpp)
@@ -25,7 +25,7 @@ add_library(mypylibEmbedded OBJECT mypylibEmbedded.cpp)
 target_link_libraries(mypylibEmbedded
     PUBLIC 
         pybind11::embed
-        MYLIB::MYLIB)
+        MYLIB::mylib)
 add_library(MYLIB::PYEMBEDDEDMYLIB ALIAS mypylibEmbedded)
 
 pybind11_add_module(mypylib mypylib.cpp)
@@ -35,7 +35,7 @@ pybind11_add_module(callEmbed callEmbed.cpp)
 
 target_link_libraries(mypylib PUBLIC pybind11::module)
 target_link_libraries(callEmbed PUBLIC pybind11::module pybind11::embed)
-target_link_libraries(mypylib PUBLIC MYLIB::MYLIB)
+target_link_libraries(mypylib PUBLIC MYLIB::mylib)
 
 function(print_target_property target_name property)
     get_target_property(tempvar ${target_name} ${property})
@@ -43,14 +43,14 @@ function(print_target_property target_name property)
     unset(tempvar)    
 endfunction(print_target_property)
 print_target_property(mypylib INCLUDE_DIRECTORIES)
-print_target_property(MYLIB::MYLIB INTERFACE_INCLUDE_DIRECTORIES)
+print_target_property(MYLIB::mylib INTERFACE_INCLUDE_DIRECTORIES)
 pybind11_extension(mypylib)
 if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
     # Strip unnecessary sections of the binary on Linux/macOS
     pybind11_strip(mypylib)
 endif()
 
-#install(TARGETS mypylib LIBRARY DESTINATION mylib)
+install(TARGETS mypylib LIBRARY DESTINATION .)
 
 #set_target_properties(mypylib PROPERTIES
 #                    INTERPROCEDURAL_OPTIMIZATION ON

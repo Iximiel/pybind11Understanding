@@ -1,5 +1,5 @@
 build/
-env/
+env*/
 _skbuild/
 *.egg-info
 *.pyc

@@ -14,9 +14,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${warnings}")
 #find_package(pybind11 REQUIRED)
 
 add_subdirectory(src)
-
-add_subdirectory(pybind)
 add_subdirectory(pybindmodule)
-
-add_subdirectory(test)
+if (NOT SKBUILD)
+  add_subdirectory(pybind)
+  add_subdirectory(test)
+endif()
 
