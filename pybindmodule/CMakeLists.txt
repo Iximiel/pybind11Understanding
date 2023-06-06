@@ -48,9 +48,11 @@ pybind11_extension(mypylib)
 if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
     # Strip unnecessary sections of the binary on Linux/macOS
     pybind11_strip(mypylib)
+    pybind11_strip(callEmbed)
 endif()
 
 install(TARGETS mypylib LIBRARY DESTINATION .)
+install(TARGETS callEmbed LIBRARY DESTINATION .)
 
 #set_target_properties(mypylib PROPERTIES
 #                    INTERPROCEDURAL_OPTIMIZATION ON
