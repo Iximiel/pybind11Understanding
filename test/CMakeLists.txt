@@ -54,3 +54,8 @@ add_test(NAME foolishADD
     COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_foolish.py
 )
 set_property(TEST foolishADD PROPERTY ENVIRONMENT "PYTHONPATH=${CMAKE_CURRENT_BIN_DIR}../pybindmodule:$ENV{PYTHONPATH}")
+
+add_test(NAME mypylibTest
+    COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_myLib.py
+)
+set_property(TEST mypylibTest PROPERTY ENVIRONMENT "PYTHONPATH=${CMAKE_CURRENT_BIN_DIR}../pybindmodule:$ENV{PYTHONPATH}")
